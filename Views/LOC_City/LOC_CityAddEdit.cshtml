@@ -1,0 +1,94 @@
+﻿@{
+
+    Layout = "_Layout";
+}
+@model LOC_CityModel
+
+<div class="row">
+    <div class="col-md-6">
+        <h5 style="text-align:center">@TempData["CityIinsertMsg"]</h5>
+        <form method="post" asp-action="Save" asp-controller="LOC_City">
+            @Html.HiddenFor(x=>x.CityID)
+            <div class="form-group">
+                <lable>Enter CountryName:-</lable>
+                <select class="form-control" asp-for="CountryID" asp-items="@(new SelectList(ViewBag.CountryList,"CountryID","CountryName"))" onchange="stateChange()">
+                    <option value="">Select Country</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <lable>Enter StateName:-</lable>
+                <select class="form-control" asp-for="StateID" asp-items="@(new SelectList(ViewBag.StateList,"StateID","StateName"))">
+                    <option value="">Select State</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <lable>Enter CityName:-</lable>
+                <input type="text" class="form-control" placeholder="Enter CityName" asp-for="CityName" />
+            </div>
+            <div class="form-group">
+                <lable>Enter PinCode:-</lable>
+                <input type="text" class="form-control" placeholder="Enter PinCode" asp-for="PinCode" />
+            </div>
+            <div class="form-group">
+                <hr /><lable>Enter CreationDate:-</lable>
+                <input type="date" class="form-control" asp-for="CreationDate" />
+            </div>
+            <div class="form-group">    
+                <hr /><lable>Enter ModificatonDate:-</lable>
+                <input type="date" class="form-control" asp-for="ModificationDate" />
+            </div>
+            <hr />
+            <div class="text-center">
+                <input type="submit" class="btn btn-outline-success" />
+                &nbsp;
+                <input type="submit" value="cancel" class="btn btn-outline-danger" />
+            </div>
+            <div class="text-center">
+                
+            </div>
+        </form>
+        
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        
+            function stateChange() {
+                var CountryID = $("#CountryID").val();
+                if (CountryID !== "") {
+                    $("#StateID").empty();
+                    $("#StateID").append($("<option></option>").val("").html("Select State"));
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        contentType: "application/json; charset=utf-8",
+                        url: "@Url.Action("DropDownByCountry","LOC_City")" + "?CountryID=" + CountryID,
+                        dataType: "json",
+                        success: function (Result) {
+                            console.log(Result);
+                            $.each(Result,
+                                function (key, value) {
+                                    $("#StateID").append($("<option></option>").val(value.stateID).html(value.stateName));
+                                });
+                        },
+                        error: function (r) {
+                            alert("Error while loading DropDown");
+                        }
+
+                    });
+                }
+                else {
+                    $("#StateID").empty();
+                    $("#StateID").append($("<option></option>").val("").html("Select State"));
+                }
+            }
+
+
+        $(window).on('load', function () {
+            console.log('All assets are loaded')
+        })
+       
+
+    </script>
+}

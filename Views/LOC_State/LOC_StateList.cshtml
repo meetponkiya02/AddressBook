@@ -1,0 +1,87 @@
+﻿@{
+    Layout = "_Layout";
+
+}
+
+
+@using System.Data
+@model DataTable
+
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-4 ">State List</h1>
+        <br />
+        <div class="d-flex  float-right">
+            <form method="post">
+                <button type="submit" asp-action="Add" asp-controller="LOC_State" class="btn btn-primary btn-sm pr-2">Add State</button>
+            </form>
+            &nbsp;&nbsp;
+            <div class="pull-right">
+                <div id="sample_1_filter" class="dataTables_filter">
+                   <input type="text" class="form-control h-75" placeholder="search" id="sample_1" aria-controls="sample_1" />
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<table class="table" id="sample_1">
+
+    <thead>
+        <tr>
+            @*<th>State ID</th>
+            <th>CountryID</th>*@
+            <th>CountryName</th>
+            <th>State Name</th>
+            <th>State Code</th>
+            <th>Creation Date</th>
+            <th>Modification Date</th>
+            <th colspan="2" class="text-center">Action</th>
+        </tr>
+
+
+    </thead>
+    <tbody id="sample_2">
+        @foreach (DataRow dr in Model.Rows)
+        {
+            <tr>
+                @*<td>@dr["StateID"]</td>
+                <td>@dr["CountryID"]</td>*@                
+                <td>@dr["CountryName"]</td>
+                <td>@dr["StateName"]</td>
+                <td>@dr["StateCode"]</td>
+                <td>@Convert.ToDateTime(dr["CreationDate"]).ToString("dd-MM-yyyy")</td>
+                <td>@Convert.ToDateTime(dr["ModificationDate"]).ToString("dd-MM-yyyy")</td>
+                <td>
+                    <form method="post" asp-controller="LOC_State" asp-action="Delete">
+                        <input type="hidden" name="StateID" value="@Convert.ToInt32(dr["StateID"]).ToString()" />
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete : @dr["StateName"]')"><i class="fa-solid fa-trash"></i></button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post" asp-controller="LOC_State" asp-action="Add" asp-route-StateID="@Convert.ToInt32(dr["StateID"])">
+                        <input type="hidden" name="StateID" value="@Convert.ToInt32(dr["StateID"]).ToString()" />
+                        <button type="submit" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i></button>
+                    </form>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+@section Scripts
+    {
+    <script>
+        $(document).ready(function () {
+            $("#sample_1").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#sample_2 tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+}
