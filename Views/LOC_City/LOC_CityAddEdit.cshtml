@@ -29,19 +29,19 @@
                 <lable>Enter PinCode:-</lable>
                 <input type="text" class="form-control" placeholder="Enter PinCode" asp-for="PinCode" />
             </div>
-            <div class="form-group">
+            @*<div class="form-group">
                 <hr /><lable>Enter CreationDate:-</lable>
                 <input type="date" class="form-control" asp-for="CreationDate" />
             </div>
             <div class="form-group">    
                 <hr /><lable>Enter ModificatonDate:-</lable>
                 <input type="date" class="form-control" asp-for="ModificationDate" />
-            </div>
+            </div>*@
             <hr />
             <div class="text-center">
                 <input type="submit" class="btn btn-outline-success" />
                 &nbsp;
-                <input type="submit" value="cancel" class="btn btn-outline-danger" />
+                <a class="btn btn-outline-danger" asp-action="Index" asp-controller="LOC_City">Cancle</a>
             </div>
             <div class="text-center">
                 

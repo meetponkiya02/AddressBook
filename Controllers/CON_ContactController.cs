@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Data;
 using AddressBook.Models;
+using AddressBookMVC.DAL;
 
 namespace AddressBook.Controllers
 {
@@ -17,20 +18,23 @@ namespace AddressBook.Controllers
         public IActionResult Index()
         {
             string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
-            DataTable dt = new DataTable();
-            SqlConnection conn = new SqlConnection(connectionstr);
 
-            conn.Open(); 
-
-            SqlCommand objCmd = conn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            objCmd.CommandText = "PR_CON_Contact_SelectAll";
-            SqlDataReader objSDR = objCmd.ExecuteReader();
-            dt.Load(objSDR);
-
-            conn.Close();
+            CON_DAL dalCON = new CON_DAL();
+            DataTable dt = dalCON.dbo_PR_CON_Contact_SelectAll(connectionstr);
 
             return View("CON_ContactList", dt);
+
+            //conn.Open(); 
+
+            //SqlCommand objCmd = conn.CreateCommand();
+            //objCmd.CommandType = CommandType.StoredProcedure;
+            //objCmd.CommandText = "PR_CON_Contact_SelectAll";
+            //SqlDataReader objSDR = objCmd.ExecuteReader();
+            //dt.Load(objSDR);
+
+            //conn.Close();
+
+            //return View("CON_ContactList", dt);
 
 
         }
@@ -40,19 +44,27 @@ namespace AddressBook.Controllers
         public IActionResult Delete(int ContactID)
         {
             string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
-            DataTable dt = new DataTable();
-            SqlConnection conn = new SqlConnection(connectionstr);
 
-            conn.Open();
+            CON_DAL dalCON = new CON_DAL();
 
-            SqlCommand objCmd = conn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            objCmd.CommandText = "PR_CON_Contact_DeleteByPK";
-            objCmd.Parameters.AddWithValue("@ContactID", ContactID);    
-            objCmd.ExecuteNonQuery();
-            conn.Close();
+            if (Convert.ToBoolean(dalCON.dbo_PR_CON_Contact_DeleteByPK(connectionstr, ContactID)))
+            {
+                return RedirectToAction("Index");
+            }
+            return View("Index");
+            //DataTable dt = new DataTable();
+            //SqlConnection conn = new SqlConnection(connectionstr);
 
-            return RedirectToAction("Index");
+            //conn.Open();
+
+            //SqlCommand objCmd = conn.CreateCommand();
+            //objCmd.CommandType = CommandType.StoredProcedure;
+            //objCmd.CommandText = "PR_CON_Contact_DeleteByPK";
+            //objCmd.Parameters.AddWithValue("@ContactID", ContactID);    
+            //objCmd.ExecuteNonQuery();
+            //conn.Close();
+
+            //return RedirectToAction("Index");
 
 
         }
@@ -63,6 +75,25 @@ namespace AddressBook.Controllers
         [HttpPost]
         public IActionResult Save(CON_ContactModel modelCON_Contact)
         {
+            #region PhotoPath
+            if (modelCON_Contact.File != null)
+            {
+                string FilePath = "wwwroot\\Upload";
+                string path = Path.Combine(Directory.GetCurrentDirectory(), FilePath);
+
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                string fileNameWithPath = Path.Combine(path, modelCON_Contact.File.FileName);
+                modelCON_Contact.PhotoPath = "~" + FilePath.Replace("wwwroot\\", "/") + "/" + modelCON_Contact.File.FileName;
+
+                using (var stream = new FileStream(fileNameWithPath, FileMode.Create))
+                {
+                    modelCON_Contact.File.CopyTo(stream);
+                }
+
+            }
+            #endregion
             string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
             SqlConnection conn = new SqlConnection(connectionstr);
 
@@ -80,6 +111,7 @@ namespace AddressBook.Controllers
                 objCmd.Parameters.Add("@ContactID",SqlDbType.Int).Value = modelCON_Contact.ContactID;
             }
             objCmd.Parameters.Add("@CountryID", SqlDbType.Int).Value = modelCON_Contact.CountryID;
+            objCmd.Parameters.Add("@PhotoPath", SqlDbType.NVarChar).Value = modelCON_Contact.PhotoPath;
             objCmd.Parameters.Add("@StateID", SqlDbType.Int).Value = modelCON_Contact.StateID;
             objCmd.Parameters.Add("@CityID", SqlDbType.Int).Value = modelCON_Contact.CityID;
             objCmd.Parameters.Add("@ContactCategoryID", SqlDbType.Int).Value = modelCON_Contact.ContactCategoryID;
@@ -143,6 +175,8 @@ namespace AddressBook.Controllers
             ViewBag.CountryList = list;
            
             #endregion
+
+
             List<LOC_StateDropDownModel> list2 = new List<LOC_StateDropDownModel>();
             ViewBag.Statelist= list2; 
             
@@ -168,6 +202,7 @@ namespace AddressBook.Controllers
             conn4.Close();
 
             #endregion
+
             List<LOC_StateDropDownModel> list3= new List<LOC_StateDropDownModel>();
             ViewBag.CityList = list3;   
 
@@ -269,11 +304,40 @@ namespace AddressBook.Controllers
                 vlst3.CityName = dr["CityName"].ToString();
                 list3.Add(vlst3);
             }
+            conn3.Close();
             var vModel=list3;   
             return Json(vModel);    
-            conn3.Close();
+            
 
             #endregion
+        }
+        #endregion
+
+
+        #region Filter Records
+        public IActionResult Filter(string? ContactName = null)
+        {
+            string str = this.Configuration.GetConnectionString("myConnectionStrings");
+            SqlConnection conn = new SqlConnection(str);
+            conn.Open();
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "PR_CON_Contact_Filter";
+
+            if (ContactName == null)
+            {
+                ContactName = "";
+            }
+            
+
+            cmd.Parameters.Add("@ContactName", SqlDbType.NVarChar).Value = ContactName;
+            
+
+            DataTable dt = new DataTable();
+            SqlDataReader sdr = cmd.ExecuteReader();
+            dt.Load(sdr);
+            conn.Close();
+            return View("CON_ContactList", dt);
         }
         #endregion
         public IActionResult CON_ContactList()

@@ -205,9 +205,38 @@ namespace AddressBook.Controllers
         }
         #endregion
 
-        public IActionResult LOC_CityList()
+        #region Filter Records
+        public IActionResult Filter(string? CityName, string? PinCode)
         {
-            return View();
+            string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
+            DataTable dt = new DataTable();
+            SqlConnection conn = new SqlConnection(connectionstr);
+
+            conn.Open();
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "PR_LOC_City_Filter";
+
+            if (CityName == null)
+            {
+                CityName = "";
+            }
+            if (PinCode == null)
+            {
+                PinCode = "";
+            }
+
+            cmd.Parameters.Add("@CityName", SqlDbType.NVarChar).Value = CityName;
+            cmd.Parameters.Add("@PinCode", SqlDbType.NVarChar).Value = PinCode;
+
+
+
+            SqlDataReader sdr = cmd.ExecuteReader();
+            dt.Load(sdr);
+            conn.Close();
+            return View("LOC_CityList", dt);
         }
+        #endregion
+
     }
 }

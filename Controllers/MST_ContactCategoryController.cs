@@ -134,10 +134,40 @@ namespace AddressBook.Controllers
         }
         #endregion
 
-       
-        public IActionResult MST_ContactCategoryList()
+
+        #region Filter Records
+        public IActionResult Filter(string? ContactCategoryName)
         {
-            return View();
+            string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
+            DataTable dt = new DataTable();
+            SqlConnection conn = new SqlConnection(connectionstr);
+
+            conn.Open();
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "PR_MST_ContactCategory_Filter";
+
+            if (ContactCategoryName == null)
+            {
+                ContactCategoryName = "";
+            }
+           
+
+            cmd.Parameters.Add("@ContactCategoryName", SqlDbType.NVarChar).Value = ContactCategoryName;
+        
+
+
+
+            SqlDataReader sdr = cmd.ExecuteReader();
+            dt.Load(sdr);
+            conn.Close();
+            return View("MST_ContactCategoryList", dt);
         }
+        #endregion
+
+        //public IActionResult MST_ContactCategoryList()
+        //{
+        //    return View();
+        //}
     }
 }

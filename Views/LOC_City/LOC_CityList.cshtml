@@ -16,9 +16,12 @@
             </form>
             &nbsp;&nbsp;
             <div class="pull-right">
-                <div id="sample_1_filter" class="dataTables_filter">
-                   <input type="text" class="form-control h-75" placeholder="search" id="sample_1" aria-controls="sample_1" />
-                </div>
+                <form method="post" asp-controller="LOC_City" asp-action="Filter" style="position: relative; margin-right: -336px;">
+                    <label>Filter: </label>
+                    <input type="search" name="CityName" class="form-control input-sm input-small input-inline" placeholder="CityName" value="" />
+                    <input type="search" name="PinCode" class="form-control input-sm input-small input-inline" placeholder="PinCode" value="" />
+                    <button type="submit" class="btn btn btn-success">GO</button>
+                </form>
             </div>
 
         </div>
@@ -48,13 +51,13 @@
                 <td>
                     <form method="post" asp-action="Delete" asp-controller="LOC_City">
                         <input type="hidden" name="CityID" value="@Convert.ToInt32(dr["CityID"]).ToString()"/>
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete : @dr["CityName"]')"><i class="fa-solid fa-trash"></i></button>
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete : @dr["CityName"]')">Delete</button>
                     </form>
                 </td>
                 <td>
                     <form method="post" asp-action="Add" asp-controller="LOC_City" asp-route-CityID="@Convert.ToInt32(dr["CityID"])">
                         <input type="hidden" name="CityID" value="@Convert.ToInt32(dr["CityID"]).ToString()" />
-                        <button type="submit" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button type="submit" class="btn btn-success">Edit</button>
                     </form>
                 </td>
             </tr>

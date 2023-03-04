@@ -14,11 +14,18 @@
                 <a type="submit" asp-action="Add" asp-controller="CON_Contact" class="btn btn-primary btn-sm pr-2">Add Contact</a>
             </form>
             &nbsp;&nbsp;
-            <div class="pull-right">
+           @* <div class="pull-right">
                 <div id="sample_1_filter" class="dataTables_filter">
                     <input type="text" class="form-control h-75" placeholder="search" id="sample_1" aria-controls="sample_1" />
                 </div>
-            </div>
+            </div>*@
+            <div class="pull-right">
+            <form method="post" asp-controller="CON_Contact" asp-action="Filter" style="position: relative; margin-right: -336px;">
+                <label>Filter: </label>
+                    <input type="search" name="ContactName" class="form-control input-sm input-small input-inline" placeholder="Contact Name" value="" />
+         
+                <button type="submit" class="btn btn btn-success">GO</button>
+            </form>
         </div>
     </div>
 </div>
@@ -27,6 +34,7 @@
     <thead>
     <th colspan="2" class="text-center">Action</th>
     <th>CountryName</th>
+    <th>PhotoPath</th>
     <th>StateName</th>
     <th>CityName</th>
     <th>ContactCategoryName</th>
@@ -51,18 +59,19 @@
                     <td class="d-flex">
                         <form method="post" asp-action="Delete" asp-controller="CON_Contact">
                             <input type="hidden" name="ContactID" value="@Convert.ToInt32(dr["ContactID"]).ToString()" />
-                            <button value="Submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete : @dr["ContactName"]')"><i class="fa-solid fa-trash"></i></button>
+                            <button value="Submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete : @dr["ContactName"]')">Delete</button>
 
                         </form>
                     </td>
                     <td>
                         <form method="post" asp-action="Add" asp-controller="CON_Contact" asp-route-ContactID="@Convert.ToInt32(dr["ContactID"])">
                             <input type="hidden" name="ContactID" value="@Convert.ToInt32(dr["ContactID"]).ToString()" />
-                            <button value="Submit" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button value="Submit" class="btn btn-success">Edit</button>
                         </form>
                     </td>
                 
                 <td>@dr["CountryName"]</td>
+                <td><img src="@Url.Content(dr["PhotoPath"].ToString())" alt="@dr["CountryName"]" style="height:50px; width:50px"></td>
                 <td>@dr["StateName"]</td>   
                 <td>@dr["CityName"]</td>
                 <td>@dr["ContactCategoryName"]</td> 

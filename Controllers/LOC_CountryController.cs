@@ -16,145 +16,149 @@ namespace AddressBook.Controllers
         }
 
         #region Index
+        #region Select All
         public IActionResult Index()
         {
+
             string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
-
-            LOC_DAL dalLOC = new LOC_DAL(); 
+            LOC_DAL dalLOC = new LOC_DAL();
             DataTable dt = dalLOC.dbo_PR_LOC_Country_SelectAll(connectionstr);
-
-            return View("LOC_CountryList",dt);
-            //DataTable dt = new DataTable();
-            //SqlConnection conn = new SqlConnection(connectionstr);
-
-            //conn.Open();
-
-            //SqlCommand objCmd = conn.CreateCommand();
-            //objCmd.CommandType = CommandType.StoredProcedure;
-            //objCmd.CommandText = "PR_LOC_Country_SelectAll";
-            //SqlDataReader objSDR = objCmd.ExecuteReader();
-            //dt.Load(objSDR);
-
-            //conn.Close();
 
             return View("LOC_CountryList", dt);
 
-           
+
         }
+        #endregion
         #endregion
 
         #region Delete
         public IActionResult Delete(int CountryID)
         {
             string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
-            DataTable dt = new DataTable();
+
+            LOC_DAL dalLOC = new LOC_DAL();
+
+            if (Convert.ToBoolean(dalLOC.dbo_PR_LOC_Country_DeleteByPK(connectionstr, CountryID)))
+            {
+                return RedirectToAction("Index");
+            }
+            return View("Index");
+
+
+            /*DataTable dt = new DataTable();
             SqlConnection conn = new SqlConnection(connectionstr);
-
             conn.Open();
-
             SqlCommand objCmd = conn.CreateCommand();
             objCmd.CommandType = CommandType.StoredProcedure;
             objCmd.CommandText = "PR_LOC_Country_DeleteByPK";
+           
             objCmd.Parameters.AddWithValue("@CountryID", CountryID);
             objCmd.ExecuteNonQuery();
-            conn.Close();
-
-            return RedirectToAction("Index") ;
+            
+            conn.Close();*/
 
 
         }
-
         #endregion
 
-        #region Save
+        #region Save 
         [HttpPost]
         public IActionResult Save(LOC_CountryModel modelLOC_Country)
         {
-            string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
-            SqlConnection conn = new SqlConnection(connectionstr);
-
-            conn.Open();
-
-            SqlCommand objCmd = conn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-
-            if (modelLOC_Country.CountryID == null)
+            if (ModelState.IsValid)
             {
+                string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
 
-                objCmd.CommandText = "PR_LOC_Country_Insert";
-
-            }
-            else
-            {
-                objCmd.CommandText = "PR_LOC_Country_UpdateByPK";
-                objCmd.Parameters.Add("@CountryID", SqlDbType.Int).Value = modelLOC_Country.CountryID;
-            }
-
-            objCmd.Parameters.Add("@CountryName", SqlDbType.NVarChar).Value = modelLOC_Country.CountryName;
-            objCmd.Parameters.Add("@CountryCode", SqlDbType.NVarChar).Value = modelLOC_Country.CountryCode;
-            objCmd.Parameters.Add("@CreationDate", SqlDbType.Date).Value = DBNull.Value;
-            objCmd.Parameters.Add("@ModificationDate", SqlDbType.Date).Value = DBNull.Value;
+                LOC_DAL dalLOC = new LOC_DAL();
 
 
-            if (Convert.ToBoolean(objCmd.ExecuteNonQuery()))
-            {
                 if (modelLOC_Country.CountryID == null)
                 {
-                    TempData["CountryInsertMessage"] = "Record Insert Successfully..!!!";
+
+                    if (Convert.ToBoolean(dalLOC.dbo_PR_LOC_Country_Insert(connectionstr, modelLOC_Country)))
+                    {
+                        TempData["CountryInsertMessage"] = "Record inserted successfully";
+
+                    }
                 }
                 else
                 {
-                    return RedirectToAction("Index"); ;
+                    if (Convert.ToBoolean(dalLOC.dbo_PR_LOC_Country_UpdateByPK(connectionstr, modelLOC_Country)))
+                    {
+
+                        TempData["CountryUpdateMessage"] = "Record Update Successfully";
+
+                    }
+                    return RedirectToAction("Index");
                 }
 
             }
 
-            conn.Close();
-            return View("LOC_CountryAddEdit");
+            return RedirectToAction("Add");
         }
-
         #endregion
 
         #region Add
-        public IActionResult Add(int? CountryID)
+        public IActionResult Add(int CountryID)
         {
             if (CountryID != null)
             {
                 string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
-                SqlConnection conn = new SqlConnection(connectionstr);
+                LOC_DAL dalLOC = new LOC_DAL();
 
-                conn.Open();
-
-                SqlCommand objCmd = conn.CreateCommand();
-                objCmd.CommandType = CommandType.StoredProcedure;
-                objCmd.CommandText = "PR_LOC_Country_SelectByPK";
-                objCmd.Parameters.Add("@CountryID", SqlDbType.Int).Value = CountryID;
-                DataTable dt = new DataTable();
-                SqlDataReader objSDR = objCmd.ExecuteReader();
-                dt.Load(objSDR);
-
-                LOC_CountryModel modellOC_CountryModel = new LOC_CountryModel();
-
-                foreach (DataRow dr in dt.Rows)
+                DataTable dt = dalLOC.dbo_PR_LOC_Country_SelectByPK(connectionstr, CountryID);
+                if (dt.Rows.Count > 0)
                 {
-                    modellOC_CountryModel.CountryID = Convert.ToInt32(dr["CountryID"]);
-                    modellOC_CountryModel.CountryName = dr["CountryName"].ToString();
-                    modellOC_CountryModel.CountryCode = dr["CountryCode"].ToString();
-                    modellOC_CountryModel.CreationDate = Convert.ToDateTime(dr["CreationDate"]);
-                    modellOC_CountryModel.ModificationDate = Convert.ToDateTime(dr["ModificationDate"]);
+                    LOC_CountryModel model = new LOC_CountryModel();
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        model.CountryID = Convert.ToInt32(dr["CountryID"]);
+                        model.CountryName = dr["CountryName"].ToString();
+                        model.CountryCode = dr["CountryCode"].ToString();
+                        model.CreationDate = Convert.ToDateTime(dr["CreationDate"]);
+                        model.ModificationDate = Convert.ToDateTime(dr["ModificationDate"]);
 
-                    return View("LOC_CountryAddEdit", modellOC_CountryModel);
+                    }
+                    return View("LOC_CountryAddEdit", model);
                 }
-                conn.Close();
             }
             return View("LOC_CountryAddEdit");
         }
 
         #endregion
-        public IActionResult LOC_CountryList()
+
+        #region Filter Records
+        public IActionResult Filter(string? CountryName, string? CountryCode)
         {
-            return View();
+            string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
+            DataTable dt = new DataTable();
+            SqlConnection conn = new SqlConnection(connectionstr);
+
+            conn.Open();
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "PR_LOC_Country_Filter";
+
+            if (CountryName == null)
+            {
+                CountryName = "";
+            }
+            if (CountryCode == null)
+            {
+                CountryCode = "";
+            }
+
+            cmd.Parameters.Add("@CountryName", SqlDbType.NVarChar).Value = CountryName;
+            cmd.Parameters.Add("@CountryCode", SqlDbType.NVarChar).Value = CountryCode;
+
+
+
+            SqlDataReader sdr = cmd.ExecuteReader();
+            dt.Load(sdr);
+            conn.Close();
+            return View("LOC_CountryList", dt);
         }
-      
+        #endregion
+
     }
 }

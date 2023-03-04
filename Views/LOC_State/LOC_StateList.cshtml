@@ -18,9 +18,13 @@
             </form>
             &nbsp;&nbsp;
             <div class="pull-right">
-                <div id="sample_1_filter" class="dataTables_filter">
-                   <input type="text" class="form-control h-75" placeholder="search" id="sample_1" aria-controls="sample_1" />
-                </div>
+                <form method="post" asp-controller="LOC_State" asp-action="Filter" style="position: relative; margin-right: -336px;">
+                    <label>Filter: </label>
+                    <input type="search" name="StateName" class="form-control input-sm input-small input-inline" placeholder="State Name" value="" />
+                    <input type="search" name="StateCode" class="form-control input-sm input-small input-inline" placeholder="State Code" value="" />
+
+                    <button type="submit" class="btn btn btn-success">GO</button>
+                </form>
             </div>
         </div>
 
@@ -58,13 +62,13 @@
                 <td>
                     <form method="post" asp-controller="LOC_State" asp-action="Delete">
                         <input type="hidden" name="StateID" value="@Convert.ToInt32(dr["StateID"]).ToString()" />
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete : @dr["StateName"]')"><i class="fa-solid fa-trash"></i></button>
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete : @dr["StateName"]')">Delete</button>
                     </form>
                 </td>
                 <td>
                     <form method="post" asp-controller="LOC_State" asp-action="Add" asp-route-StateID="@Convert.ToInt32(dr["StateID"])">
                         <input type="hidden" name="StateID" value="@Convert.ToInt32(dr["StateID"]).ToString()" />
-                        <button type="submit" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button type="submit" class="btn btn-success">Edit</button>
                     </form>
                 </td>
             </tr>
