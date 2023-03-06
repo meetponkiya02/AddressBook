@@ -8,7 +8,7 @@ namespace AddressBook.Controllers
 {
     public class LOC_CountryController : Controller
     {
-
+            
         private IConfiguration Configuration;
         public LOC_CountryController(IConfiguration _configuration)
         {
@@ -65,8 +65,7 @@ namespace AddressBook.Controllers
         [HttpPost]
         public IActionResult Save(LOC_CountryModel modelLOC_Country)
         {
-            if (ModelState.IsValid)
-            {
+            
                 string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
 
                 LOC_DAL dalLOC = new LOC_DAL();
@@ -92,7 +91,7 @@ namespace AddressBook.Controllers
                     return RedirectToAction("Index");
                 }
 
-            }
+            
 
             return RedirectToAction("Add");
         }

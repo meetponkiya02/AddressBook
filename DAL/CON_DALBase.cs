@@ -181,7 +181,7 @@ namespace AddressBookMVC.DAL
                 sqlDB.AddInParameter(dbCMD, "Address", SqlDbType.NVarChar, modelCON_Contact.Address);
 
                 sqlDB.AddInParameter(dbCMD, "PinCode", SqlDbType.NVarChar, modelCON_Contact.PinCode);
-                sqlDB.AddInParameter(dbCMD, "MobileNo", SqlDbType.NVarChar, modelCON_Contact.Mobile);
+                sqlDB.AddInParameter(dbCMD, "Mobile", SqlDbType.NVarChar, modelCON_Contact.Mobile);
                 sqlDB.AddInParameter(dbCMD, "AlternetContact", SqlDbType.NVarChar, modelCON_Contact.AlternetContact);
                 sqlDB.AddInParameter(dbCMD, "Email", SqlDbType.NVarChar, modelCON_Contact.Email);
 
@@ -191,7 +191,7 @@ namespace AddressBookMVC.DAL
                 sqlDB.AddInParameter(dbCMD, "Twitter", SqlDbType.NVarChar, modelCON_Contact.Twitter);
                 sqlDB.AddInParameter(dbCMD, "Insta", SqlDbType.NVarChar, modelCON_Contact.Insta);
                 sqlDB.AddInParameter(dbCMD, "Gender", SqlDbType.NVarChar, modelCON_Contact.Gender);
-   
+                sqlDB.AddInParameter(dbCMD, "PhotoPath", SqlDbType.NVarChar, modelCON_Contact.PhotoPath);
 
                 sqlDB.AddInParameter(dbCMD, "CreationDate", SqlDbType.DateTime, DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss"));
                 sqlDB.AddInParameter(dbCMD, "ModificationDate", SqlDbType.DateTime, DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss"));
@@ -258,7 +258,7 @@ namespace AddressBookMVC.DAL
                 sqlDB.AddInParameter(dbCMD, "Address", SqlDbType.NVarChar, modelCON_Contact.Address);
 
                 sqlDB.AddInParameter(dbCMD, "PinCode", SqlDbType.NVarChar, modelCON_Contact.PinCode);
-                sqlDB.AddInParameter(dbCMD, "MobileNo", SqlDbType.NVarChar, modelCON_Contact.Mobile);
+                sqlDB.AddInParameter(dbCMD, "Mobile", SqlDbType.NVarChar, modelCON_Contact.Mobile);
                 sqlDB.AddInParameter(dbCMD, "AlternetContact", SqlDbType.NVarChar, modelCON_Contact.AlternetContact);
                 sqlDB.AddInParameter(dbCMD, "Email", SqlDbType.NVarChar, modelCON_Contact.Email);
 
@@ -268,6 +268,7 @@ namespace AddressBookMVC.DAL
                 sqlDB.AddInParameter(dbCMD, "Twitter", SqlDbType.NVarChar, modelCON_Contact.Twitter);
                 sqlDB.AddInParameter(dbCMD, "Insta", SqlDbType.NVarChar, modelCON_Contact.Insta);
                 sqlDB.AddInParameter(dbCMD, "Gender", SqlDbType.NVarChar, modelCON_Contact.Gender);
+                sqlDB.AddInParameter(dbCMD, "PhotoPath", SqlDbType.NVarChar, modelCON_Contact.PhotoPath);
 
                 sqlDB.AddInParameter(dbCMD, "CreationDate", SqlDbType.DateTime, DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss"));
                 sqlDB.AddInParameter(dbCMD, "ModificationDate", SqlDbType.DateTime, DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss"));

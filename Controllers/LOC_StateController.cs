@@ -53,72 +53,78 @@ namespace AddressBook.Controllers
         public IActionResult Delete(int StateID)
         {
             string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
-            DataTable dt = new DataTable();
-            SqlConnection conn = new SqlConnection(connectionstr);
+            LOC_DAL dalLOC = new LOC_DAL();
 
-            conn.Open();
+            if (Convert.ToBoolean(dalLOC.dbo_PR_LOC_State_DeleteByPK(connectionstr, StateID)))
+            {
+                return RedirectToAction("Index");
+            }
+            return View("Index");
 
-            SqlCommand objCmd = conn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            objCmd.CommandText = "PR_LOC_State_DeleteByPK";
-            objCmd.Parameters.AddWithValue("@StateID", StateID);
-            objCmd.ExecuteNonQuery();
-            conn.Close();
 
-            return RedirectToAction("Index");
+            /* DataTable dt = new DataTable();
+             SqlConnection conn = new SqlConnection(connectionstr);
+             conn.Open();
+             SqlCommand objCmd = conn.CreateCommand();
+             objCmd.CommandType = CommandType.StoredProcedure;
+             objCmd.CommandText = "PR_LOC_State_DeleteByPK";
+             objCmd.Parameters.AddWithValue("@StateID", StateID);
+             objCmd.ExecuteNonQuery();
+             conn.Close();
+ */
 
 
         }
-
         #endregion
 
         #region Save
         [HttpPost]
         public IActionResult Save(LOC_StateModel modelLOC_State)
         {
+
+            #region Insert
+
+
             string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
-            SqlConnection conn = new SqlConnection(connectionstr);
 
-            conn.Open();
+            LOC_DAL dalLOC = new LOC_DAL();
 
-            SqlCommand objCmd = conn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
+
             if (modelLOC_State.StateID == null)
             {
-                objCmd.CommandText = "PR_LOC_State_Insert";
+
+                if (Convert.ToBoolean(dalLOC.dbo_PR_LOC_State_Insert(connectionstr, modelLOC_State)))
+                {
+                    TempData["StateInsertMessage"] = "Record inserted successfully....";
+
+                }
             }
             else
             {
-                objCmd.CommandText = "PR_LOC_State_UpdateByPK";
-                objCmd.Parameters.Add("@StateID", SqlDbType.Int).Value = modelLOC_State.StateID;
-            }
-            objCmd.Parameters.Add("@CountryID", SqlDbType.Int).Value = modelLOC_State.CountryID;
-            objCmd.Parameters.Add("@StateName", SqlDbType.NVarChar).Value = modelLOC_State.StateName;
-            objCmd.Parameters.Add("@StateCode", SqlDbType.NVarChar).Value = modelLOC_State.StateCode;
-            objCmd.Parameters.Add("@CreationDate", SqlDbType.DateTime).Value = DBNull.Value;
-            objCmd.Parameters.Add("@ModificationDate", SqlDbType.DateTime).Value = DBNull.Value;
+                if (Convert.ToBoolean(dalLOC.dbo_PR_LOC_State_UpdateByPK(connectionstr, modelLOC_State)))
+                {
 
-            if (Convert.ToBoolean(objCmd.ExecuteNonQuery()))
-            {
-                if (modelLOC_State.StateID == null)
-                {
-                    TempData["StateIinsertMsg"] = "Record Insert Sucessfully....!!!";
+                    TempData["StateUpdateMessage"] = "Record Update Successfully....";
+
                 }
-                else
-                {
-                    return RedirectToAction("Index"); ;
-                }
+                return RedirectToAction("Index");
             }
-            conn.Close();
+
+
             return RedirectToAction("Add");
+
+            #endregion
         }
         #endregion
 
         #region Add
-        public IActionResult Add(int? StateID)
+        public IActionResult Add(int StateID)
         {
+            #region Country Drop Down
+
             string connectionstr1 = this.Configuration.GetConnectionString("myConnectionStrings");
             DataTable dt1 = new DataTable();
+
             SqlConnection conn1 = new SqlConnection(connectionstr1);
 
             conn1.Open();
@@ -128,6 +134,9 @@ namespace AddressBook.Controllers
             objCmd1.CommandText = "PR_LOC_Country_SelectForDropDown";
             SqlDataReader objSDR1 = objCmd1.ExecuteReader();
             dt1.Load(objSDR1);
+
+
+
             List<LOC_CountryDropDownModel> list = new List<LOC_CountryDropDownModel>();
             foreach (DataRow dr in dt1.Rows)
             {
@@ -138,44 +147,65 @@ namespace AddressBook.Controllers
             }
             ViewBag.CountryList = list;
             conn1.Close();
+            #endregion
 
-            #region Selectbypk
+            #region Select By PK
+
             if (StateID != null)
             {
+
                 string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
-                DataTable dt = new DataTable();
+                LOC_DAL dalLOC = new LOC_DAL();
+
+                DataTable dt = dalLOC.dbo_PR_LOC_State_SelectByPK(connectionstr, StateID);
+                if (dt.Rows.Count > 0)
+                {
+                    LOC_StateModel model = new LOC_StateModel();
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        model.CountryID = Convert.ToInt32(dr["CountryID"]);
+                        model.StateID = Convert.ToInt32(dr["StateID"]);
+                        model.StateName = dr["StateName"].ToString();
+                        model.StateCode = dr["StateCode"].ToString();
+                        model.CreationDate = Convert.ToDateTime(dr["CreationDate"]);
+                        model.ModificationDate = Convert.ToDateTime(dr["ModificationDate"]);
+
+                    }
+                    return View("LOC_StateAddEdit", model);
+                }
+
+                /*string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
                 SqlConnection conn = new SqlConnection(connectionstr);
-
                 conn.Open();
-
                 SqlCommand objCmd = conn.CreateCommand();
                 objCmd.CommandType = CommandType.StoredProcedure;
                 objCmd.CommandText = "PR_LOC_State_SelectByPK";
                 objCmd.Parameters.Add("@StateID", SqlDbType.Int).Value = StateID;
+                DataTable dt = new DataTable();
                 SqlDataReader objSDR = objCmd.ExecuteReader();
                 dt.Load(objSDR);
-
+                
                 LOC_StateModel modelLOC_State = new LOC_StateModel();
                 foreach (DataRow dr in dt.Rows)
                 {
                     modelLOC_State.CountryID = Convert.ToInt32(dr["CountryID"]);
                     modelLOC_State.StateID = Convert.ToInt32(dr["StateID"]);
-                    modelLOC_State.StateCode = dr["StateCode"].ToString();
                     modelLOC_State.StateName = dr["StateName"].ToString();
+                    modelLOC_State.StateCode = dr["StateCode"].ToString();
                     modelLOC_State.CreationDate = Convert.ToDateTime(dr["CreationDate"]);
                     modelLOC_State.ModificationDate = Convert.ToDateTime(dr["ModificationDate"]);
-
+                    return View("LOC_StateAddEdit", modelLOC_State);
                 }
-
-                conn.Close();
-                return View("LOC_StateAddEdit", modelLOC_State);
+               
+               
+                conn.Close();*/
             }
             #endregion
 
             return View("LOC_StateAddEdit");
         }
         #endregion
-
+       
         #region Filter Records
         public IActionResult Filter(string? StateName, string? StateCode)
         {

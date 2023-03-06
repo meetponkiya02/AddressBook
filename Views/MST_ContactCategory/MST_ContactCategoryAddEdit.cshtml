@@ -5,13 +5,14 @@
 <div class="row">
     <div class="align-content-center">
     <div class="col-md-6">
-        <h5 style="text-align:center">@TempData["ContactcategoryIinsertMsg"]</h5>
+            <h5 style="text-align:center">@TempData["ContactCategoryInsertMessage"]</h5>
         <hr/>
         <form method="post"  asp-action="Save" asp-controller="MST_ContactCategory">
             @Html.HiddenFor(x=>x.ContactCategoryID)
             <div class="form-group">
                 <lable>Enter ContactCategoryName:-</lable>
                 <input type="text" class="form-control"  placeholder="Enter ContactCategoryName" asp-for="ContactCategoryName"/>
+                    <span asp-validation-for="ContactCategoryName" class="text-danger"></span>
             </div>
             @*<div class="form-group">
                 <hr /><lable>Enter CreationDate:-</lable>

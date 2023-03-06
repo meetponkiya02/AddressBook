@@ -7,21 +7,24 @@
 <div class="row">
     <div class="col-md-6">
         <form method="post" asp-action="Save" asp-controller="LOC_State">
-            <h5 style="text-align:center">@TempData["StateIinsertMsg"]</h5>
+            <h5 style="text-align:center">@TempData["StateInsertMessage"]</h5>
             @Html.HiddenFor(x=>x.StateID)
             <div class="form-group">
                 <lable>Enter CountryName:-</lable>
                 <select class="form-control" asp-for="CountryID" asp-items="@(new SelectList(ViewBag.CountryList,"CountryID","CountryName"))">
                     <option value="">Select Country</option>
                 </select>
+                <span asp-validation-for="CountryID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <lable>Enter StateName:-</lable>
                 <input type="text" class="form-control" placeholder="Enter StateName" asp-for="StateName" />
+                <span asp-validation-for="StateName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <lable>Enter StateCode:-</lable>
                 <input type="text" class="form-control" placeholder="Enter StateCode" asp-for="StateCode" />
+                <span asp-validation-for="StateCode" class="text-danger"></span>
             </div>
             @*<div class="form-group">
                 <hr /><lable>Enter CreationDate:-</lable>

@@ -5,7 +5,7 @@
 @model CON_ContactModel
 <div class="row">
     <div class="col-md-6">
-        <h5 style="text-align:center">@TempData["ContactIinsertMsg"]</h5>
+        <h5 style="text-align:center">@TempData["ContactUpdateMessage"]</h5>
         <form method="post" asp-action="Save" asp-controller="CON_Contact" enctype="multipart/form-data">
             @Html.HiddenFor(x=>x.ContactID)
             @Html.HiddenFor(x=>x.PhotoPath)
@@ -14,17 +14,20 @@
                 <select class="form-control" asp-for="CountryID" asp-items="@(new SelectList(ViewBag.CountryList,"CountryID","CountryName"))" onchange="statechange()">
                     <option value="">Select Country</option>
                 </select>
+                <span asp-validation-for="CountryID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <hr /><lable>Enter State Name:-</lable>
                 <select class="form-control" asp-for="StateID" asp-items="@(new SelectList(ViewBag.StateList,"StateID","StateName"))" onchange="citychange()">
                     <option value="">Select State</option>
                 </select>
+                <span asp-validation-for="StateID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <hr /><lable>Enter CityName:-</lable>
                 <select class="form-control" asp-for="CityID" asp-items="@(new SelectList(ViewBag.CityList,"CityID","CityName"))">
                     <option value="">Select City</option>
+                    <span asp-validation-for="CityID" class="text-danger"></span>
                 </select>
             </div>
             <div class="form-group">
@@ -32,55 +35,67 @@
                 <select class="form-control" asp-for="ContactCategoryID" asp-items="@(new SelectList(ViewBag.ContactCategoryList,"ContactCategoryID","ContactCategoryName"))">
                     <option value="">Select ContactCategoryName</option>
                 </select>
+                <span asp-validation-for="ContactCategoryID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <hr /><lable>Enter ContactName:-</lable>
                 <input type="text" class="form-control" placeholder="Enter ContactName" asp-for="ContactName" />
+                <span asp-validation-for="ContactName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <hr /><lable>Enter Address:-</lable>
                 <input type="text" class="form-control" placeholder="Enter Address" asp-for="Address" />
+                <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <hr /><lable>Enter PinCode:-</lable>
                 <input type="text" class="form-control" placeholder="Enter PinCode" asp-for="PinCode" />
+                <span asp-validation-for="PinCode" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <hr /><lable>Enter Mobile:-</lable>
                 <input type="text" class="form-control" placeholder="Enter Mobile" asp-for="Mobile" />
+                <span asp-validation-for="Mobile" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <hr /><lable>Enter AlternetContact:-</lable>
                 <input type="text" class="form-control" placeholder="Enter AlternetContact" asp-for="AlternetContact" />
+                <span asp-validation-for="AlternetContact" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <hr /><lable>Enter Email:-</lable>
                 <input type="text" class="form-control" placeholder="Enter Email" asp-for="Email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <hr /><lable>Enter BirthDate:-</lable>
                 <input type="date" class="form-control" placeholder="Enter BirthDate" asp-for="BirthDate" />
+                <span asp-validation-for="BirthDate " class="text-danger"></span>
             </div>
             <div class="form-group">
                 <hr /><lable>Enter LinkedIn:-</lable>
                 <input type="text" class="form-control" placeholder="Enter LinkedIn" asp-for="LinkedIn" />
+                <span asp-validation-for="LinkedIn" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <hr /><lable>Enter Twitter:-</lable>
                 <input type="text" class="form-control" placeholder="Enter Twitter" asp-for="Twitter" />
+                <span asp-validation-for="Twitter" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <hr /><lable>Enter Insta:-</lable>
                 <input type="text" class="form-control" placeholder="Enter Insta" asp-for="Insta" />
+                <span asp-validation-for="Insta" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <hr /><lable>Enter Gender:-</lable>
                 <input type="text" class="form-control" placeholder="Enter Gender" asp-for="Gender" />
+                <span asp-validation-for="Gender" class="text-danger"></span>
             </div>
             <div>
                 <lable>Upload Photo:-</lable>
                 <input type="file" asp-for="File" class="form-control" />
-
+                <span asp-validation-for="File" class="text-danger"></span>
             </div>
            
             <hr />

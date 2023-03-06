@@ -24,19 +24,7 @@ namespace AddressBook.Controllers
 
             return View("CON_ContactList", dt);
 
-            //conn.Open(); 
-
-            //SqlCommand objCmd = conn.CreateCommand();
-            //objCmd.CommandType = CommandType.StoredProcedure;
-            //objCmd.CommandText = "PR_CON_Contact_SelectAll";
-            //SqlDataReader objSDR = objCmd.ExecuteReader();
-            //dt.Load(objSDR);
-
-            //conn.Close();
-
-            //return View("CON_ContactList", dt);
-
-
+           
         }
         #endregion
 
@@ -94,66 +82,46 @@ namespace AddressBook.Controllers
 
             }
             #endregion
+
             string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
-            SqlConnection conn = new SqlConnection(connectionstr);
+            CON_DAL dalCON = new CON_DAL();
 
-            conn.Open();
 
-            SqlCommand objCmd = conn.CreateCommand();
-            objCmd.CommandType = CommandType.StoredProcedure;
-            if(modelCON_Contact.ContactID == null)
+            if (modelCON_Contact.ContactID == null)
             {
-                objCmd.CommandText = "PR_CON_Contact_Insert";
-            }
-            else 
-            {
-                objCmd.CommandText = "PR_CON_Contact_UpdateByPK";
-                objCmd.Parameters.Add("@ContactID",SqlDbType.Int).Value = modelCON_Contact.ContactID;
-            }
-            objCmd.Parameters.Add("@CountryID", SqlDbType.Int).Value = modelCON_Contact.CountryID;
-            objCmd.Parameters.Add("@PhotoPath", SqlDbType.NVarChar).Value = modelCON_Contact.PhotoPath;
-            objCmd.Parameters.Add("@StateID", SqlDbType.Int).Value = modelCON_Contact.StateID;
-            objCmd.Parameters.Add("@CityID", SqlDbType.Int).Value = modelCON_Contact.CityID;
-            objCmd.Parameters.Add("@ContactCategoryID", SqlDbType.Int).Value = modelCON_Contact.ContactCategoryID;
-            objCmd.Parameters.Add("@ContactName", SqlDbType.NVarChar).Value = modelCON_Contact.ContactName;
-            objCmd.Parameters.Add("@Address", SqlDbType.NVarChar).Value = modelCON_Contact.Address;
-            objCmd.Parameters.Add("@PinCode", SqlDbType.Int).Value = modelCON_Contact.PinCode;
-            objCmd.Parameters.Add("@Mobile", SqlDbType.NVarChar).Value = modelCON_Contact.Mobile;
-            objCmd.Parameters.Add("@AlternetContact", SqlDbType.NVarChar).Value = modelCON_Contact.AlternetContact;
-            objCmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = modelCON_Contact.Email;
-            objCmd.Parameters.Add("@BirthDate", SqlDbType.Date).Value = modelCON_Contact.BirthDate;
-            objCmd.Parameters.Add("@LinkedIn", SqlDbType.NVarChar).Value = modelCON_Contact.LinkedIn;
-            objCmd.Parameters.Add("@Twitter", SqlDbType.NVarChar).Value = modelCON_Contact.Twitter;
-            objCmd.Parameters.Add("@Insta", SqlDbType.NVarChar).Value = modelCON_Contact.Insta;
-            objCmd.Parameters.Add("@Gender", SqlDbType.NVarChar).Value = modelCON_Contact.Gender;
-            objCmd.Parameters.Add("@CreationDate", SqlDbType.Date).Value = DBNull.Value;
-            objCmd.Parameters.Add("@modificationDate", SqlDbType.Date).Value = DBNull.Value;
-            if(Convert.ToBoolean(objCmd.ExecuteNonQuery()))
-            {
-                if(modelCON_Contact.ContactID == null)
+
+                if (Convert.ToBoolean(dalCON.dbo_PR_CON_Contact_Insert(connectionstr, modelCON_Contact)))
                 {
-                    TempData["ContactIinsertMsg"] = "Record Insert Sucessfully....!!!";
-                }
-                else 
-                {
-                    return RedirectToAction("Index"); ;
+                    TempData["ContactInsertMessage"] = "Record inserted successfully";
+
                 }
             }
-            conn.Close();
-        
+            else
+            {
+                if (Convert.ToBoolean(dalCON.dbo_PR_CON_Contact_UpdateByPK(connectionstr, modelCON_Contact)))
+                {
+
+                    TempData["ContactUpdateMessage"] = "Record Update Successfully";
+
+                }
+                return RedirectToAction("Index");
+            }
+
+          
+
             return RedirectToAction("Add");
-
-
         }
         #endregion
-   
+
         #region Add
-        public IActionResult Add(int? ContactID)
+        public IActionResult Add(int ContactID)
         {
 
-            #region Country Dropdown
+            #region Country Drop Down
+
             string connectionstr1 = this.Configuration.GetConnectionString("myConnectionStrings");
             DataTable dt1 = new DataTable();
+
             SqlConnection conn1 = new SqlConnection(connectionstr1);
 
             conn1.Open();
@@ -164,6 +132,9 @@ namespace AddressBook.Controllers
             SqlDataReader objSDR1 = objCmd1.ExecuteReader();
             dt1.Load(objSDR1);
             conn1.Close();
+
+
+
             List<LOC_CountryDropDownModel> list = new List<LOC_CountryDropDownModel>();
             foreach (DataRow dr in dt1.Rows)
             {
@@ -173,23 +144,31 @@ namespace AddressBook.Controllers
                 list.Add(vlst);
             }
             ViewBag.CountryList = list;
-           
+
+
+            List<LOC_StateDropDownModel> list1 = new List<LOC_StateDropDownModel>();
+            ViewBag.StateList = list1;
+            List<LOC_StateDropDownModel> list2 = new List<LOC_StateDropDownModel>();
+            ViewBag.CityList = list2;
+
             #endregion
 
-
-            List<LOC_StateDropDownModel> list2 = new List<LOC_StateDropDownModel>();
-            ViewBag.Statelist= list2; 
-            
-            #region ContactCategory DropDown
+            #region Contact Category Drop Down
             string connectionstr4 = this.Configuration.GetConnectionString("myConnectionStrings");
             DataTable dt4 = new DataTable();
+
             SqlConnection conn4 = new SqlConnection(connectionstr4);
+
             conn4.Open();
+
             SqlCommand objCmd4 = conn4.CreateCommand();
-            objCmd4.CommandType = CommandType.StoredProcedure;                                            
+            objCmd4.CommandType = CommandType.StoredProcedure;
             objCmd4.CommandText = "PR_MST_ContactCategory_SelectForDropDown";
             SqlDataReader objSDR4 = objCmd4.ExecuteReader();
             dt4.Load(objSDR4);
+
+
+
             List<MST_ContactCategoryDropDownModel> list4 = new List<MST_ContactCategoryDropDownModel>();
             foreach (DataRow dr in dt4.Rows)
             {
@@ -200,55 +179,57 @@ namespace AddressBook.Controllers
             }
             ViewBag.ContactCategoryList = list4;
             conn4.Close();
-
             #endregion
 
-            List<LOC_StateDropDownModel> list3= new List<LOC_StateDropDownModel>();
-            ViewBag.CityList = list3;   
-
-
+            #region Select By PK
             if (ContactID != null)
             {
+
                 string connectionstr = this.Configuration.GetConnectionString("myConnectionStrings");
-                DataTable dt = new DataTable();
-                SqlConnection conn = new SqlConnection(connectionstr);
+                CON_DAL dalCON = new CON_DAL();
 
-                conn.Open();
-
-                SqlCommand objCmd = conn.CreateCommand();
-                objCmd.CommandType = CommandType.StoredProcedure;
-                objCmd.CommandText = "PR_CON_Contact_SelectByPK";         
-                objCmd.Parameters.Add("@ContactID", SqlDbType.Int).Value = ContactID;
-                SqlDataReader objSDR = objCmd.ExecuteReader();
-                dt.Load(objSDR);
-                CON_ContactModel modelCON_Contact = new CON_ContactModel();
-                foreach (DataRow dr in dt.Rows)
+                DataTable dt = dalCON.dbo_PR_CON_Contact_SelectByPK(connectionstr, ContactID);
+                if (dt.Rows.Count > 0)
                 {
-                    modelCON_Contact.ContactID = Convert.ToInt32(dr["ContactID"]);
-                    modelCON_Contact.CountryID = Convert.ToInt32(dr["CountryID"]);
-                    modelCON_Contact.StateID = Convert.ToInt32(dr["StateID"]);
-                    modelCON_Contact.CityID = Convert.ToInt32(dr["CityID"]);
-                    modelCON_Contact.ContactCategoryID = Convert.ToInt32(dr["ContactCategoryID"]);
-                    modelCON_Contact.ContactName = dr["ContactName"].ToString();
-                    modelCON_Contact.Address = dr["Address"].ToString();
-                    modelCON_Contact.PinCode = dr["PinCode"].ToString();
-                    modelCON_Contact.Mobile = dr["Mobile"].ToString();
-                    modelCON_Contact.AlternetContact = dr["AlternetContact"].ToString();
-                    modelCON_Contact.Email = dr["Email"].ToString();
-                    modelCON_Contact.BirthDate = Convert.ToDateTime(dr["BirthDate"]);
-                    modelCON_Contact.LinkedIn = dr["LinkedIn"].ToString();
-                    modelCON_Contact.Twitter = dr["Twitter"].ToString();
-                    modelCON_Contact.Insta = dr["Insta"].ToString();
-                    modelCON_Contact.Gender = dr["Gender"].ToString();
-                    modelCON_Contact.CreationDate = Convert.ToDateTime(dr["CreationDate"]);
-                    modelCON_Contact.ModificationDate = Convert.ToDateTime(dr["ModificationDate"]);
+                    CON_ContactModel model = new CON_ContactModel();
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        DropDownByCountry(Convert.ToInt32(dr["CountryID"]));
+                        DropDownByState(Convert.ToInt32(dr["StateID"]));
+                        model.ContactID = Convert.ToInt32(dr["ContactID"]);
+                        model.CountryID = Convert.ToInt32(dr["CountryID"]);
+                        model.StateID = Convert.ToInt32(dr["StateID"]);
+                        model.CityID = Convert.ToInt32(dr["CityID"]);
+                        model.ContactCategoryID = Convert.ToInt32(dr["ContactCategoryID"]);
+                        model.ContactName = dr["ContactName"].ToString();
+                        model.Address = dr["Address"].ToString();
+                        model.PinCode = dr["PinCode"].ToString();
+                        model.Mobile = dr["Mobile"].ToString();
+                        model.AlternetContact = dr["AlternetContact"].ToString();
+                        model.Email = dr["Email"].ToString();
+                        model.BirthDate = Convert.ToDateTime(dr["BirthDate"]);
+                        model.LinkedIn = dr["LinkedIn"].ToString();
+                        model.Twitter = dr["Twitter"].ToString();
+                        model.Insta = dr["Insta"].ToString();
+                        model.Gender = dr["Gender"].ToString();
+
+                        model.PhotoPath = dr["PhotoPath"].ToString();
+
+                        model.CreationDate = Convert.ToDateTime(dr["CreationDate"]);
+                        model.ModificationDate = Convert.ToDateTime(dr["ModificationDate"]);
+
+                    }
+                    return View("CON_ContactAddEdit", model);
+
+
                 }
 
-                conn.Close();
-                return View("CON_ContactAddEdit", modelCON_Contact);
-            }
 
-               return View("CON_ContactAddEdit");
+       
+            }
+            #endregion
+
+            return View("CON_ContactAddEdit");
         }
         #endregion
 
@@ -340,9 +321,6 @@ namespace AddressBook.Controllers
             return View("CON_ContactList", dt);
         }
         #endregion
-        public IActionResult CON_ContactList()
-        {
-            return View();
-        }
+        
     }
 }
