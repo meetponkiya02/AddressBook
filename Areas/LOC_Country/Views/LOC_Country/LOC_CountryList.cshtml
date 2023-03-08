@@ -1,0 +1,89 @@
+﻿@{
+    Layout = "_Layout";
+
+}
+
+
+@using System.Data
+@model DataTable
+
+
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-4 ">Country List</h1>
+        <br />
+        <div class="d-flex  float-right">
+            <form method="post">           
+                <button type="submit" asp-area="LOC_Country" asp-action="Add" asp-controller="LOC_Country" class="btn btn-primary btn-sm pr-2">Add Country</button>
+            </form>
+            &nbsp;&nbsp;
+            <div class="pull-right">
+                <form method="post" asp-area="LOC_Country" asp-controller="LOC_Country" asp-action="Filter" style="position: relative; margin-right: -336px;">
+                    <label>Filter: </label>
+                    <input type="search" name="CountryName" class="form-control input-sm input-small input-inline" placeholder="CountryName" value="" />
+                    <input type="search" name="CountryCode" class="form-control input-sm input-small input-inline" placeholder="CountryCode" value="" />
+                    <button type="submit" class="btn btn btn-success">GO</button>
+                </form>
+            </div>
+        </div> 
+    </div>
+</div>
+
+
+<table class="table" id="sample_1">
+
+    <thead >
+        <tr>
+            @*<th>CountryID</th>*@
+            <th>Country Name</th>
+            <th>Country Code</th>
+            <th>Creation Date</th>
+            <th>Modification Date</th>
+            <th colspan="2" class="text-center">Action</th>
+        </tr>
+
+
+    </thead>
+    <tbody id="sample_2">
+        @foreach (DataRow dr in Model.Rows)
+        {
+            <tr>
+                @*<td>@dr["CountryID"]</td>*@
+                <td>@dr["CountryName"]</td>
+                <td>@dr["CountryCode"]</td>
+                
+                <td>@Convert.ToDateTime(dr["CreationDate"]).ToString("dd-MM-yyyy")</td>
+                <td>@Convert.ToDateTime(dr["ModificationDate"]).ToString("dd-MM-yyyy")</td>
+                <td>
+                    <form method="post" asp-area="LOC_Country" asp-controller="LOC_Country" asp-action="Delete">
+                        <input type="hidden" name="CountryID" value="@Convert.ToInt32(dr["CountryID"]).ToString()"/>
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete : @dr["CountryName"]')">Delete</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post" asp-area="LOC_Country" asp-controller="LOC_Country" asp-action="Add" asp-route-CountryID="@Convert.ToInt32(dr["CountryID"])">
+                        <input type="hidden" name="CountryID" value="@Convert.ToInt32(dr["CountryID"]).ToString()" />
+                        <button type="submit" class="btn btn-success">Edit</button>
+                    </form>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table> 
+
+
+
+@section scripts
+    {
+    <script>
+        $(document).ready(function () {
+            $("#sample_1").on("keyup", function () {
+                var value = $(this).val().tolowercase();
+                $("#sample_2 tr").filter(function () {
+                    $(this).toggle($(this).text().tolowercase().indexof(value) > -1)
+                });
+            });
+        });
+    </script>
+} 

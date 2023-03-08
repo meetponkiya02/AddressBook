@@ -1,0 +1,47 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+@model LOC_StateModel
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="post" asp-area="LOC_State" asp-action="Save" asp-controller="LOC_State">
+            <h5 style="text-align:center">@TempData["StateInsertMessage"]</h5>
+            @Html.HiddenFor(x=>x.StateID)
+            <div class="form-group">
+                <lable>Enter CountryName:-</lable>
+                <select class="form-control"  asp-for="CountryID" asp-items="@(new SelectList(ViewBag.CountryList,"CountryID","CountryName"))">
+                    <option value="">Select Country</option>
+                </select>
+                <span asp-validation-for="CountryID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <lable>Enter StateName:-</lable>
+                <input type="text" class="form-control" placeholder="Enter StateName" asp-for="StateName" />
+                <span asp-validation-for="StateName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <lable>Enter StateCode:-</lable>
+                <input type="text" class="form-control" placeholder="Enter StateCode" asp-for="StateCode" />
+                <span asp-validation-for="StateCode" class="text-danger"></span>
+            </div>
+            @*<div class="form-group">
+                <hr /><lable>Enter CreationDate:-</lable>
+                <input type="date" class="form-control" asp-for="CreationDate" />
+            </div>
+            <div class="form-group">
+                <hr /><lable>Enter ModificatonDate:-</lable>
+                <input type="date" class="form-control" asp-for="ModificationDate" />
+            </div>*@
+            <hr />
+            <div class="text-center">
+                <input type="submit" class="btn btn-outline-success" />
+                <a class="btn btn-outline-danger" asp-area="LOC_State" asp-action="Index" asp-controller="LOC_State">Cancle</a>
+            </div>
+        </form>
+        <hr />
+        
+        
+    </div>
+</div>

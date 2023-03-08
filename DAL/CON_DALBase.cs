@@ -1,4 +1,4 @@
-﻿using AddressBook.Models;
+﻿using AddressBook.Areas.CON_Contact.Models;
 using Microsoft.Practices.EnterpriseLibrary.Data.Sql;
 using System.Data.Common;
 using System.Data;
@@ -237,7 +237,6 @@ namespace AddressBookMVC.DAL
 
 
         #endregion
-
 
         #region CON_Insert
 
