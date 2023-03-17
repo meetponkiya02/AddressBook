@@ -1,12 +1,6 @@
 ﻿using AddressBook.DAL;
 using AddressBook.Areas.LOC_State.Models;
-using AddressBookMVC.DAL;
-
-
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using AddressBook.Areas.LOC_Country.Models;
